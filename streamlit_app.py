@@ -222,59 +222,27 @@ def create_realtime_visualization(current_time, queue, servers, served_customers
 
 def simulate_queue_realtime(customers, num_servers, service_time_mean, realtime_placeholder):
     servers = [Server(i+1) for i in range(num_servers)]
-    queue = []
-    served_customers = []
-    current_time = 0
     
-    event_times = []
+    # 通常のシミュレーションを実行してデータを取得
     for customer in customers:
-        event_times.append(('arrival', customer.arrival_time, customer))
+        available_server = min(servers, key=lambda s: s.available_time)
+        service_time = np.random.exponential(service_time_mean)
+        available_server.serve_customer(customer, service_time)
     
-    for server in servers:
-        event_times.append(('service_complete', 0, server))
+    # リアルタイム表示用のガントチャート構築
+    processed_customers = []
     
-    event_times.sort(key=lambda x: x[1])
-    
-    for event_type, event_time, entity in event_times:
-        current_time = event_time
+    for i, customer in enumerate(customers):
+        processed_customers.append(customer)
         
-        if event_type == 'arrival':
-            customer = entity
-            queue.append(customer)
-            
-            available_server = None
-            for server in servers:
-                if server.available_time <= current_time:
-                    available_server = server
-                    break
-            
-            if available_server and queue:
-                customer = queue.pop(0)
-                service_time = np.random.exponential(service_time_mean)
-                available_server.serve_customer(customer, service_time)
-                served_customers.append(customer)
-                
-                event_times.append(('service_complete', customer.service_end_time, available_server))
-                event_times.sort(key=lambda x: x[1])
+        # 現在までの顧客でガントチャートを表示
+        fig = create_gantt_chart(processed_customers[:i+1])
+        fig.update_layout(title=f'リアルタイム待ち行列シミュレーション（{i+1}/{len(customers)}人目まで処理完了）')
         
-        elif event_type == 'service_complete' and event_time > 0:
-            server = entity
-            
-            if queue:
-                customer = queue.pop(0)
-                service_time = np.random.exponential(service_time_mean)
-                server.serve_customer(customer, service_time)
-                served_customers.append(customer)
-                
-                event_times.append(('service_complete', customer.service_end_time, server))
-                event_times.sort(key=lambda x: x[1])
-        
-        if realtime_placeholder:
-            fig = create_realtime_visualization(current_time, queue, servers, served_customers)
-            realtime_placeholder.plotly_chart(fig, use_container_width=True)
-            time.sleep(0.5)
+        realtime_placeholder.plotly_chart(fig, use_container_width=True)
+        time.sleep(0.8)  # 少し長めの間隔で表示
     
-    return served_customers, servers
+    return customers, servers
 
 if start_simulation:
     customers = generate_customers(num_customers, arrival_rate)
