@@ -142,7 +142,8 @@ def create_gantt_chart(customers):
             y=1.02,
             xanchor="right",
             x=1
-        )
+        ),
+        yaxis=dict(autorange="reversed")
     )
     
     return fig
