@@ -8,9 +8,9 @@ from plotly.subplots import make_subplots
 import time
 import random
 
-st.set_page_config(page_title="待ち行列シミュレーター", layout="wide")
+st.set_page_config(page_title="シミュレーション③待ち行列", layout="wide")
 
-st.title("待ち行列シミュレーター")
+st.title("シミュレーション③待ち行列（pp.94-96）")
 st.caption("Created by Dit-Lab.(Daiki ITO)")
 st.caption("Supported by Tomoaki ATSUMI")
 
