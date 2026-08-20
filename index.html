@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>シミュレーション③ 待ち行列｜情報Ⅰ共通テスト対策問題集</title>
+<meta name="description" content="到着の間隔とサービスにかかる時間から、行列がどれだけ伸びるかを調べます。ガントチャートで待ち時間を目に見える形にしましょう。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E%3Crect width=%2232%22 height=%2232%22 fill=%22%2315181c%22/%3E%3Ctext x=%2216%22 y=%2222%22 font-size=%2218%22 font-family=%22monospace%22 fill=%22%23fff%22 text-anchor=%22middle%22%3E01%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+
+<header class="app-header">
+  <div class="inner">
+    <span class="eyebrow">第 3 章　モデル化とシミュレーション　3-4</span>
+    <h1>シミュレーション③ 待ち行列（pp.94-96）</h1>
+    <p class="lead">到着の間隔とサービスにかかる時間から、行列がどれだけ伸びるかを調べます。ガントチャートで待ち時間を目に見える形にしましょう。</p>
+    <p class="credit">Created by Dit-Lab.(Daiki ITO)　/　Supported by Tomoaki ATSUMI</p>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="step" id="step1">
+    <h2><span class="no">STEP 1</span>到着間隔の分布を確率にする</h2>
+    <p class="desc">観察した到着間隔を<span class="term" data-t="度数">度数</span>にまとめ、<span class="term" data-t="相対度数">相対度数</span>と<span class="term" data-t="累積度数">累積相対度数</span>を求めます。この累積が<strong>そのまま乱数の範囲</strong>になります。</p>
+
+    <div class="panel">
+      <h3>最初の50人の到着間隔（本文と同じ）</h3>
+      <div class="tbl-scroll"><table class="tbl" id="arrTable"></table></div>
+      <div class="btn-row" style="margin-top:12px">
+        <button class="btn primary" id="checkArr">答え合わせ</button>
+        <button class="btn" id="showArr">計算のしかたを見る</button>
+        <button class="btn ghost" id="resetArr">消してやり直す</button>
+      </div>
+      <div class="note" id="arrFb" hidden style="margin-top:12px"></div>
+      <div class="note info" style="margin-top:12px">
+        相対度数 ＝ <span class="mono">その階級の人数 ÷ 50</span>。累積相対度数 ＝ <span class="mono">その階級までの相対度数の合計</span>。
+        最後は必ず 1.00 になります。到着間隔は範囲で集計しているので、<span class="term" data-t="階級値">階級値</span>で代表させます。
+      </div>
+    </div>
+  </section>
+
+  <section class="step" id="step2">
+    <h2><span class="no">STEP 2</span>乱数から到着間隔を決める</h2>
+    <p class="desc">0以上1未満の<span class="term" data-t="乱数">乱数</span>が、累積相対度数のどこに入るかで到着間隔が決まります。</p>
+    <div class="panel">
+      <div class="grid c2">
+        <div>
+          <div class="tbl-scroll"><table class="tbl" id="mapTable"></table></div>
+          <div class="btn-row" style="margin-top:12px">
+            <button class="btn primary" id="rollOne">乱数を1つ作る</button>
+            <button class="btn ghost" id="rollClear">消す</button>
+          </div>
+          <div class="eqbox" id="rollOut" style="margin-top:12px">—</div>
+        </div>
+        <div>
+          <h3 style="font-size:.84rem;color:var(--ink-2);margin-bottom:8px">本文と同じ乱数で確かめる</h3>
+          <div class="tbl-scroll"><table class="tbl" id="rndTable"></table></div>
+          <div class="note info" style="margin-top:10px">
+            4人目の到着間隔が3分になる乱数は、<span class="mono">0.64以上0.84未満</span>の範囲です。
+            選択肢のうちこの範囲にあるのは <strong>0.73</strong> だけです。
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="step" id="step3">
+    <h2><span class="no">STEP 3</span>ガントチャートで待ち行列を見る</h2>
+    <p class="desc">横軸が時間、たての1本が1人です。<strong>灰色が待ち時間、濃い色が乗車時間</strong>。本文と同じ5人から始めます。</p>
+
+    <div class="panel">
+      <div class="btn-row" style="margin-bottom:12px">
+        <button class="btn" id="useBook">本文と同じ5人（0・1・2・3・1分）</button>
+        <button class="btn primary" id="reRun">乱数で作り直す</button>
+        <label style="font-size:.85rem;display:flex;align-items:center;gap:6px">人数
+          <input type="number" id="nPeople" value="5" min="2" max="30" style="width:78px;min-height:36px">
+        </label>
+        <label style="font-size:.85rem;display:flex;align-items:center;gap:6px">乗車時間
+          <input type="number" id="svcTime" value="4" min="1" max="15" style="width:78px;min-height:36px">分
+        </label>
+      </div>
+      <div id="gantt"></div>
+      <div class="legend2">
+        <span><i style="background:#d7d3cb"></i>待ち時間</span>
+        <span><i style="background:#123a6b"></i>乗車時間</span>
+        <span><i style="background:none;border-left:2px dashed #b3261e;width:2px"></i>待ち人数が最大の時刻</span>
+      </div>
+      <div class="metrics" style="margin-top:14px">
+        <div class="metric"><div class="k">最も待ち人数が多いとき</div><div class="v" id="mPeak">—</div><div class="s">人</div></div>
+        <div class="metric"><div class="k">最も長い待ち時間</div><div class="v" id="mMaxWait">—</div><div class="s">分</div></div>
+        <div class="metric"><div class="k">平均待ち時間</div><div class="v" id="mAvgWait">—</div><div class="s">分</div></div>
+        <div class="metric"><div class="k">最後の人が乗り終わる時刻</div><div class="v" id="mEnd">—</div><div class="s">分</div></div>
+      </div>
+      <div class="tbl-scroll" style="margin-top:12px"><table class="tbl" id="qTable"></table></div>
+      <div class="note" id="qNote" style="margin-top:12px"></div>
+      <div class="toolbar" id="qTools"></div>
+    </div>
+  </section>
+
+  <section class="step" id="step4">
+    <h2><span class="no">STEP 4</span>条件を変えて混雑を減らす</h2>
+    <p class="desc">乗車時間を短くする案と、到着が集中する場合を比べます。<strong>50人分を100回くり返した平均</strong>で見ます。</p>
+    <div class="panel">
+      <div class="grid c2">
+        <div>
+          <label class="fld" for="svc2">乗車時間：<span class="mono" id="svc2V">4</span> 分</label>
+          <input type="range" id="svc2" min="1" max="8" step="1" value="4">
+          <label class="fld" style="margin-top:10px" for="lanes">窓口（アトラクション）の数：<span class="mono" id="lanesV">1</span></label>
+          <input type="range" id="lanes" min="1" max="4" step="1" value="1">
+          <div class="btn-row" style="margin-top:12px"><button class="btn primary" id="runMany">50人×100回を実行</button></div>
+        </div>
+        <div>
+          <div class="metrics">
+            <div class="metric"><div class="k">平均待ち時間</div><div class="v" id="sAvg">—</div><div class="s">分</div></div>
+            <div class="metric"><div class="k">最大待ち時間の平均</div><div class="v" id="sMax">—</div><div class="s">分</div></div>
+          </div>
+          <div class="note" id="manyNote" style="margin-top:14px">ボタンを押してください。</div>
+        </div>
+      </div>
+      <div id="manyChart" style="margin-top:14px"></div>
+    </div>
+  </section>
+
+  <section class="step" id="step5">
+    <h2><span class="no">STEP 5</span>確認クイズ</h2>
+    <div class="panel">
+      <div class="qhead">
+        <span class="badge" id="qProgress">1 / 1</span>
+        <span class="badge">正解 <span class="score" id="qScore">0</span></span>
+      </div>
+      <div class="card-q"><div class="q-scene" id="qText"></div></div>
+      <div class="choice4" id="qChoices"></div>
+      <div class="note" id="qFb" hidden style="margin-top:12px"></div>
+      <div class="btn-row" style="margin-top:12px">
+        <button class="btn primary" id="qNext" disabled>次の問題</button>
+        <button class="btn ghost" id="qReset">最初から</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="step" id="glossary">
+    <h2><span class="no">用語</span>この節で出てくることば</h2>
+    <div id="glossBox"></div>
+  </section>
+
+  <section class="step">
+    <h2><span class="no">まとめ</span>待ち行列のポイント</h2>
+    <ul style="margin:0;padding-left:1.2em;color:var(--ink-2);font-size:.92rem;line-height:2.05">
+      <li>観察した分布の<strong>累積相対度数</strong>を、そのまま乱数の範囲として使う。</li>
+      <li>到着時刻 ＝ <span class="mono">前の人の到着時刻 ＋ 到着間隔</span>。</li>
+      <li>乗車開始 ＝ <span class="mono">到着時刻と、前の人の乗車終了時刻のうち遅いほう</span>。</li>
+      <li>待ち時間 ＝ <span class="mono">乗車開始 − 到着時刻</span>。</li>
+      <li><strong>到着の間隔よりサービス時間が長い</strong>と、行列はどんどん伸びていく。</li>
+      <li>窓口を増やすと待ち時間は大きく減る。ただし費用もかかるので、そのつり合いを考える。</li>
+    </ul>
+  </section>
+
+  <section class="step">
+    <h2><span class="no">活用</span>授業・探究での使い方</h2>
+    <div class="use-note">
+      <h3>授業で</h3>
+      <ul>
+        <li>STEP 1 の度数分布表の空欄を各自に計算させ、累積相対度数の意味を確認する。</li>
+        <li>STEP 2 で乱数から到着間隔を決める作業を全体で1回やってから、STEP 3 に進む。</li>
+        <li>STEP 3 のガントチャートを投影し、待ち人数と待ち時間の読み取り方を指し示す。</li>
+      </ul>
+      <h3 style="margin-top:12px">探究で</h3>
+      <ul>
+        <li>学校の購買や自販機で到着間隔を実測し、その分布からシミュレーションを組み立てる。</li>
+        <li>サービス時間を短くする案と、窓口を増やす案のどちらが効果的かを比べる。</li>
+        <li>何度もくり返して平均待ち時間を求め、混雑対策を提案する。</li>
+      </ul>
+    </div>
+  </section>
+
+</main>
+
+<footer class="app-footer">
+  情報Ⅰ 共通テスト対策問題集（技術評論社）連動Webアプリ　/　Created by Dit-Lab.(Daiki ITO)　/　Supported by Tomoaki ATSUMI
+</footer>
+
+<script src="js/tools.js"></script>
+<script src="js/chart.js"></script>
+<script src="js/terms.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
