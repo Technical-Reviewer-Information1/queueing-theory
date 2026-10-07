@@ -270,5 +270,19 @@
     drawArr(); drawMap(); drawGantt(); startQuiz();
     window.Terms.attach();
   }
+  if (window.Predict) Predict.make('pdQ', {
+    q: '店が「ぎりぎりさばけている」状態のとき、お客の来る間隔が<strong>ほんの少しだけ短く</strong>なりました。待ち時間はどうなるでしょう？',
+    type: 'pick',
+    ch: ['短くなった分だけ、少し増える', 'まったく変わらない', '急に何倍にもふくれあがることがある', '短くなる'],
+    answer: function () { return 2; },
+    show: function () {
+      return '待ち行列は<strong>サービスが追いつくかどうかの境目</strong>で急に伸びます。' +
+             '処理が間に合っているうちは列はほとんどできませんが、到着がサービスの速さに追いつくと、さばき切れなかった人が次々と積み上がっていきます。';
+    },
+    why: '混雑は<strong>比例では増えません</strong>。「少し混んだだけなのに待ち時間が倍以上になった」というのは、' +
+         'レジ・道路・サーバーなど、どんな待ち行列でも起こります。STEP 4 で窓口を増やしたり処理時間を縮めたりすると、' +
+         '<strong>境目から離すだけで待ちが大きく減る</strong>ことを確かめられます。'
+  });
+
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();
